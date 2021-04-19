@@ -5,14 +5,21 @@ const paths = require('./paths');
 
 // 插件
 const webpack = require('webpack');
-const TerserPlugin = require('terser-webpack-plugin');
-// const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 
-// npm install --save-dev postcss-loader postcss  mini-css-extract-plugin html-webpack-plugin
-// react-dev-utils CssMinimizerPlugin
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const {InjectManifest} = require('workbox-webpack-plugin');
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
 const imageInlineSizeLimit = 10000;
 const shouldUseSourceMap = false;
+
+const swSrc = paths.swSrc;
 
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
@@ -150,19 +157,17 @@ module.exports = function (webpackEnv) {
 
     resolve: {
       // 找不到直接去node_modules中查找，不一层层向上了
-      modules: ['node_modules', paths.appNodeModules].concat(
-        modules.additionalModulePaths || []
-      ),
+      modules: ['node_modules', paths.appNodeModules],
       // alias: {
       //   ...(modules.webpackAliases || {}),
       // },
       extensions: paths.moduleFileExtensions.map(ext => `.${ext}`),
-      // plugins: [
-      //   // 防止引入src目录之外的文件导致不可预期的结果
-      //   new ModuleScopePlugin(paths.appSrc, [
-      //     paths.appPackageJson,
-      //   ]),
-      // ],
+      plugins: [
+        // 防止引入src目录之外的文件导致不可预期的结果
+        new ModuleScopePlugin(paths.appSrc, [
+          paths.appPackageJson,
+        ]),
+      ],
     },
 
     module: {
@@ -232,31 +237,31 @@ module.exports = function (webpackEnv) {
               },
             },
             // 对于src外的文件做处理
-            {
-              test: /\.(js|mjs)$/,
-              exclude: /@babel(?:\/|\\{1,2})runtime/,
-              loader: require.resolve('babel-loader'),
-              options: {
-                babelrc: false,
-                configFile: false,
-                compact: false,
-                presets: [
-                  [
-                    require.resolve('babel-preset-react-app/dependencies'),
-                    { helpers: true },
-                  ],
-                ],
-                cacheDirectory: true,
-                // See #6846 for context on why cacheCompression is disabled
-                cacheCompression: false,
-
-                // Babel sourcemaps are needed for debugging into node_modules
-                // code.  Without the options below, debuggers like VSCode
-                // show incorrect code and set breakpoints on the wrong lines.
-                sourceMaps: shouldUseSourceMap,
-                inputSourceMap: shouldUseSourceMap,
-              },
-            },
+            // {
+            //   test: /\.(js|mjs)$/,
+            //   exclude: /@babel(?:\/|\\{1,2})runtime/,
+            //   loader: require.resolve('babel-loader'),
+            //   options: {
+            //     babelrc: false,
+            //     configFile: false,
+            //     compact: false,
+            //     presets: [
+            //       [
+            //         require.resolve('babel-preset-react-app/dependencies'),
+            //         { helpers: true },
+            //       ],
+            //     ],
+            //     cacheDirectory: true,
+            //     // See #6846 for context on why cacheCompression is disabled
+            //     cacheCompression: false,
+            //
+            //     // Babel sourcemaps are needed for debugging into node_modules
+            //     // code.  Without the options below, debuggers like VSCode
+            //     // show incorrect code and set breakpoints on the wrong lines.
+            //     sourceMaps: shouldUseSourceMap,
+            //     inputSourceMap: shouldUseSourceMap,
+            //   },
+            // },
             {
               test: cssRegex,
               exclude: cssModuleRegex,
@@ -284,6 +289,8 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
+                  // 使用Dart Sass
+                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
@@ -297,6 +304,7 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
+                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
@@ -306,7 +314,6 @@ module.exports = function (webpackEnv) {
               ),
             },
             {
-              loader: require.resolve('file-loader'),
               exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
               type: 'asset/resource',
             },
@@ -341,25 +348,19 @@ module.exports = function (webpackEnv) {
         )
       ),
       // 运行时插入全局常量
-      // new webpack.DefinePlugin(env.stringified),
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
-      // 检查输入路径
-      // isEnvDevelopment && new CaseSensitivePathsPlugin(),
+      // 检查输入路径大小写问题
+      isEnvDevelopment && new CaseSensitivePathsPlugin(),
       // 忘记npm install时候运行项目，无需重启。直接npm install
-      // isEnvDevelopment &&
-      // new WatchMissingNodeModulesPlugin(paths.appNodeModules),
+      isEnvDevelopment &&
+      new WatchMissingNodeModulesPlugin(paths.appNodeModules),
       isEnvProduction &&
       new MiniCssExtractPlugin({
         filename: 'static/css/[name].[contenthash:8].css',
         chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
       }),
-      // Generate an asset manifest file with the following content:
-      // - "files" key: Mapping of all asset filenames to their corresponding
-      //   output file so that tools can pick it up without having to parse
-      //   `index.html`
-      // - "entrypoints" key: Array of files which are included in `index.html`,
-      //   can be used to reconstruct the HTML if necessary
-      new ManifestPlugin({
+      // 生成一个源文件映射到相应的输出文件
+      new WebpackManifestPlugin({
         fileName: 'asset-manifest.json',
         publicPath: paths.publicUrlOrPath,
         generate: (seed, files, entrypoints) => {
@@ -377,80 +378,18 @@ module.exports = function (webpackEnv) {
           };
         },
       }),
-      // Moment.js is an extremely popular library that bundles large locale files
-      // by default due to how webpack interprets its code. This is a practical
-      // solution that requires the user to opt into importing specific locales.
-      // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-      // You can remove this if you don't use Moment.js:
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-      // Generate a service worker script that will precache, and keep up to date,
-      // the HTML & assets that are part of the webpack build.
+      // 生成要预缓存的资产列表注入到Service Worker文件中。
       isEnvProduction &&
         fs.existsSync(swSrc) &&
-        new WorkboxWebpackPlugin.InjectManifest({
+        new InjectManifest({
+          // 插入地址路径
           swSrc,
           dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
           exclude: [/\.map$/, /asset-manifest\.json$/, /LICENSE/],
-          // Bump up the default maximum size (2mb) that's precached,
-          // to make lazy-loading failure scenarios less likely.
-          // See https://github.com/cra-template/pwa/issues/13#issuecomment-722667270
+          // 提升预先缓存的默认最大大小（2mb），以减少延迟加载失败的可能性。
+          // https://github.com/cra-template/pwa/issues/13#issuecomment-722667270
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         }),
-      useTypeScript &&
-      new ForkTsCheckerWebpackPlugin({
-        typescript: resolve.sync('typescript', {
-          basedir: paths.appNodeModules,
-        }),
-        async: isEnvDevelopment,
-        checkSyntacticErrors: true,
-        resolveModuleNameModule: process.versions.pnp
-          ? `${__dirname}/pnpTs.js`
-          : undefined,
-        resolveTypeReferenceDirectiveModule: process.versions.pnp
-          ? `${__dirname}/pnpTs.js`
-          : undefined,
-        tsconfig: paths.appTsConfig,
-        reportFiles: [
-          // This one is specifically to match during CI tests,
-          // as micromatch doesn't match
-          // '../cra-template-typescript/template/src/App.tsx'
-          // otherwise.
-          '../**/src/**/*.{ts,tsx}',
-          '**/src/**/*.{ts,tsx}',
-          '!**/src/**/__tests__/**',
-          '!**/src/**/?(*.)(spec|test).*',
-          '!**/src/setupProxy.*',
-          '!**/src/setupTests.*',
-        ],
-        silent: true,
-        // The formatter is invoked directly in WebpackDevServerUtils during development
-        formatter: isEnvProduction ? typescriptFormatter : undefined,
-      }),
-      !disableESLintPlugin &&
-      new ESLintPlugin({
-        // Plugin options
-        extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
-        formatter: require.resolve('react-dev-utils/eslintFormatter'),
-        eslintPath: require.resolve('eslint'),
-        failOnError: !(isEnvDevelopment && emitErrorsAsWarnings),
-        context: paths.appSrc,
-        cache: true,
-        cacheLocation: path.resolve(
-          paths.appNodeModules,
-          '.cache/.eslintcache'
-        ),
-        // ESLint class options
-        cwd: paths.appPath,
-        resolvePluginsRelativeTo: __dirname,
-        baseConfig: {
-          extends: [require.resolve('eslint-config-react-app/base')],
-          rules: {
-            ...(!hasJsxRuntime && {
-              'react/react-in-jsx-scope': 'error',
-            }),
-          },
-        },
-      }),
     ],
 
     // 加载的node模块设置为空
@@ -469,3 +408,4 @@ module.exports = function (webpackEnv) {
     performance: false,
   }
 }
+// Moment.js库
