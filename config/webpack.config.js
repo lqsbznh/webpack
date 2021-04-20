@@ -11,10 +11,11 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {InjectManifest} = require('workbox-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
+const {InjectManifest} = require('workbox-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 
 const imageInlineSizeLimit = 10000;
 const shouldUseSourceMap = false;
@@ -347,6 +348,8 @@ module.exports = function (webpackEnv) {
             : undefined
         )
       ),
+      // 将PUBLIC_URL插入html页面(%PUBLIC_URL%)
+      new InterpolateHtmlPlugin(HtmlWebpackPlugin, {PUBLIC_URL: paths.publicUrlOrPath.slice(0, -1)}),
       // 运行时插入全局常量
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
       // 检查输入路径大小写问题
