@@ -4,9 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 // 运行node的位置
-console.log(process.cwd())
 const appDirectory = fs.realpathSync(process.cwd())
-console.log(appDirectory)
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
 const moduleFileExtensions = [
