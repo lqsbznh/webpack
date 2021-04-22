@@ -11,6 +11,7 @@
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "css-loader": "^5.2.3",
     "css-minimizer-webpack-plugin": "^2.0.0",
+    "express": "^4.17.1",
     "html-webpack-plugin": "^5.3.1",
     "mini-css-extract-plugin": "^1.5.0",
     "postcss": "^8.2.10",
@@ -23,12 +24,13 @@
     "url-loader": "^4.1.1",
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
+    "webpack-dev-middleware": "^4.1.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-manifest-plugin": "^3.1.1",
     "workbox-webpack-plugin": "^6.1.5"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./scripts/start.js"
   },
   "repository": {
     "type": "git",

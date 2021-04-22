@@ -9,6 +9,7 @@ module.exports = function (proxy, allowedHost) {
   return {
     // 打开会跳过host检查，容易遭受DNS攻击
     disableHostCheck: false,
+    open: true,
     // gzip compression
     compress: true,
     // 关闭日志
