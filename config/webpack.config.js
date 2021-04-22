@@ -38,12 +38,12 @@ module.exports = function (webpackEnv) {
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
-      isEnvProduction && {
-        loader: MiniCssExtractPlugin.loader,
-        options: {
-          publicPath: paths.publicUrlOrPath,
-        },
-      },
+      // isEnvProduction && {
+      //   loader: MiniCssExtractPlugin.loader,
+      //   options: {
+      //     publicPath: paths.publicUrlOrPath,
+      //   },
+      // },
       {
         loader: require.resolve('css-loader'),
         options: cssOptions,
@@ -77,6 +77,7 @@ module.exports = function (webpackEnv) {
         }
       })
     }
+    // console.log(loaders)
     return loaders;
   }
 
@@ -138,8 +139,12 @@ module.exports = function (webpackEnv) {
               comments: false,
               ascii_only: true,
             },
+            format: {
+              // 删除代码注释
+              comments: false,
+            },
           },
-          sourceMap: shouldUseSourceMap,
+          // sourceMap: shouldUseSourceMap,
         }),
         // 压缩css
         new CssMinimizerPlugin({
@@ -148,8 +153,8 @@ module.exports = function (webpackEnv) {
       ],
       splitChunks: {
         // 加强
-        chunks: 'all',
-        name: isEnvDevelopment,
+        // chunks: 'all',
+        // name: isEnvDevelopment,
       },
       runtimeChunk: {
         name: entrypoint => `runtime-${entrypoint.name}`,
@@ -396,16 +401,16 @@ module.exports = function (webpackEnv) {
     ],
 
     // 加载的node模块设置为空
-    node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
-    },
+    // node: {
+    //   module: 'empty',
+    //   dgram: 'empty',
+    //   dns: 'mock',
+    //   fs: 'empty',
+    //   http2: 'empty',
+    //   net: 'empty',
+    //   tls: 'empty',
+    //   child_process: 'empty',
+    // },
 
     // 如果一个资源超过 250kb，webpack 会对此输出一个警告来通知你。
     performance: false,
