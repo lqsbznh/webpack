@@ -36,18 +36,23 @@ module.exports = function (webpackEnv) {
     isEnvProduction && process.argv.includes('--profile');
 
   const getStyleLoaders = (cssOptions, preProcessor) => {
-    const loaders = [
-      isEnvDevelopment && require.resolve('style-loader'),
-      // isEnvProduction && {
-      //   loader: MiniCssExtractPlugin.loader,
-      //   options: {
-      //     publicPath: paths.publicUrlOrPath,
-      //   },
-      // },
+    const loaders = [];
+    isEnvDevelopment && loaders.push(require.resolve('style-loader'));
+    isEnvProduction && loaders.push(
+      {
+        loader: MiniCssExtractPlugin.loader,
+        options: {
+          publicPath: paths.publicUrlOrPath,
+        },
+      }
+    );
+    loaders.push(
       {
         loader: require.resolve('css-loader'),
         options: cssOptions,
-      },
+      }
+    );
+    // loaders.push(
       // {
       //   loader: require.resolve('postcss-loader'),
       //   options: {
@@ -67,7 +72,8 @@ module.exports = function (webpackEnv) {
       //     ],
       //     sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
       //   },
-    ];
+    // )
+
 
     if (preProcessor) {
       loaders.push({
@@ -77,7 +83,6 @@ module.exports = function (webpackEnv) {
         }
       })
     }
-    // console.log(loaders)
     return loaders;
   }
 
@@ -399,18 +404,6 @@ module.exports = function (webpackEnv) {
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         }),
     ],
-
-    // 加载的node模块设置为空
-    // node: {
-    //   module: 'empty',
-    //   dgram: 'empty',
-    //   dns: 'mock',
-    //   fs: 'empty',
-    //   http2: 'empty',
-    //   net: 'empty',
-    //   tls: 'empty',
-    //   child_process: 'empty',
-    // },
 
     // 如果一个资源超过 250kb，webpack 会对此输出一个警告来通知你。
     performance: false,
