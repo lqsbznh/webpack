@@ -6,7 +6,6 @@ const fs = require('fs');
 // 运行node的位置
 const appDirectory = fs.realpathSync(process.cwd())
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
-
 const moduleFileExtensions = [
   'js',
   'jsx',
@@ -24,20 +23,20 @@ const resolveModule = (resolveFn, filePath) => {
   return `${filePath}.js`;
 }
 
-console.log(process.env.BUILD_PATH)
+// console.log(process.env.BUILD_PATH)
 module.exports = {
   appPath: resolveApp('.'),
-  appBuild: resolveApp('dist'),
-  appPublic: resolveApp('public'),
-  appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
-  appPackageJson: resolveApp('package.json'),
-  appSrc: resolveApp('src'),
-  appTsConfig: resolveApp('tsconfig.json'),
+  appBuild: resolveApp('./dist'),
+  appPublic: resolveApp('./public'),
+  appHtml: resolveApp('./public/index.html'),
+  appIndexJs: resolveModule(resolveApp, './src/index'),
+  appPackageJson: resolveApp('./package.json'),
+  appSrc: resolveApp('./src'),
+  appTsConfig: resolveApp('./tsconfig.json'),
   // testsSetup: resolveModule(resolveApp, 'src/setupTests'),
   // proxySetup: resolveApp('src/setupProxy.js'),
-  appNodeModules: resolveApp('node_modules'),
-  swSrc: resolveModule(resolveApp, 'src/service-worker'),
-  publicUrlOrPath: resolveApp(""),
+  appNodeModules: resolveApp('./node_modules'),
+  swSrc: resolveModule(resolveApp, './src/service-worker'),
+  publicUrlOrPath: resolveApp("./"),
   moduleFileExtensions: moduleFileExtensions,
 };

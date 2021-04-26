@@ -2,5 +2,6 @@ $primary-color: white;
 $bg: black;
 h1 {
   color: $primary-color;
-  background-color: $bg;
+  //background-color: $bg;
+  background: url(./12.png);
 }

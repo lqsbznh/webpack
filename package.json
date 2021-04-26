@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "```javascript react react-dom eslint-plugin-react-hooks ``` ###### html",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.13.15",
     "@babel/preset-env": "^7.13.15",
@@ -16,7 +19,7 @@
     "postcss": "^8.2.10",
     "postcss-loader": "^5.2.0",
     "react-dev-utils": "^11.0.4",
-    "sass": "^1.32.10",
+    "sass": "^1.32.11",
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",

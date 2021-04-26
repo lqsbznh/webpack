@@ -36,26 +36,23 @@ module.exports = function (webpackEnv) {
     isEnvProduction && process.argv.includes('--profile');
 
   const getStyleLoaders = (cssOptions, preProcessor) => {
-    const loaders = [];
-    isEnvDevelopment && loaders.push(require.resolve('style-loader'));
-    isEnvProduction && loaders.push(
-      {
+    const loaders = [
+      isEnvDevelopment && require.resolve('style-loader'),
+      isEnvProduction && {
         loader: MiniCssExtractPlugin.loader,
-        options: {
-          publicPath: paths.publicUrlOrPath,
-        },
-      }
-    );
-    loaders.push(
+        options: paths.publicUrlOrPath.startsWith('.')
+          ? { publicPath: '../../' }
+          : {},
+      },
       {
         loader: require.resolve('css-loader'),
         options: cssOptions,
-      }
-    );
-    // loaders.push(
+      },
       // {
       //   loader: require.resolve('postcss-loader'),
       //   options: {
+      //     // Necessary for external CSS imports to work
+      //     // https://github.com/facebook/create-react-app/issues/2677
       //     ident: 'postcss',
       //     plugins: () => [
       //       require('postcss-flexbugs-fixes'),
@@ -72,8 +69,8 @@ module.exports = function (webpackEnv) {
       //     ],
       //     sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
       //   },
-    // )
-
+      // },
+    ].filter(Boolean);
 
     if (preProcessor) {
       loaders.push({
@@ -101,11 +98,11 @@ module.exports = function (webpackEnv) {
     entry: paths.appIndexJs,
 
     output: {
-      path: isEnvProduction ? paths.appBuild : undefined,
+      path: paths.appBuild,
       pathinfo: isEnvDevelopment,
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+        : isEnvDevelopment && 'static/js/[name].bundle.js',
       chunkFilename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].chunk.js'
         : isEnvDevelopment && 'static/js/[name].chunk.js',
@@ -158,8 +155,8 @@ module.exports = function (webpackEnv) {
       ],
       splitChunks: {
         // 加强
-        // chunks: 'all',
-        // name: isEnvDevelopment,
+        chunks: 'all',
+        name: "isEnvDevelopment",
       },
       runtimeChunk: {
         name: entrypoint => `runtime-${entrypoint.name}`,
@@ -403,7 +400,7 @@ module.exports = function (webpackEnv) {
           // https://github.com/cra-template/pwa/issues/13#issuecomment-722667270
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         }),
-    ],
+    ].filter(Boolean),
 
     // 如果一个资源超过 250kb，webpack 会对此输出一个警告来通知你。
     performance: false,
