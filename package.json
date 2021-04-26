@@ -41,5 +41,38 @@
   "bugs": {
     "url": "https://github.com/lqsbznh/webpack/issues"
   },
-  "homepage": "https://github.com/lqsbznh/webpack#readme"
+  "homepage": "https://github.com/lqsbznh/webpack#readme",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/env",
+        {
+          "useBuiltIns": "usage",
+          "corejs": { "version": "3.8", "proposals": true }
+        }
+      ],
+      [
+        "@babel/preset-react",
+        {
+          "development": false,
+          "pragma": "dom",
+          "pragmaFrag": "DomFrag",
+          "throwIfNamespace": false
+          // "importSource": "custom-jsx-library" // defaults to react (only in automatic runtime)
+        }
+      ]
+    ]
+  }
 }
