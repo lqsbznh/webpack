@@ -73,12 +73,14 @@ module.exports = function (webpackEnv) {
     ].filter(Boolean);
 
     if (preProcessor) {
-      loaders.push({
+      const rule = {
         loader: require.resolve(preProcessor),
         options: {
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         }
-      })
+      };
+      preProcessor === 'sass-loader' && (rule["implementation"] = require('sass'));
+      loaders.push(rule)
     }
     return loaders;
   }
@@ -298,7 +300,6 @@ module.exports = function (webpackEnv) {
                 {
                   importLoaders: 3,
                   // 使用Dart Sass
-                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
@@ -312,7 +313,6 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
-                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,

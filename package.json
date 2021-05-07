@@ -4,12 +4,16 @@
   "description": "```javascript react react-dom eslint-plugin-react-hooks ``` ###### html",
   "main": "index.js",
   "dependencies": {
+    "@babel/runtime-corejs3": "^7.14.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.13.15",
+    "@babel/plugin-transform-runtime": "^7.13.15",
     "@babel/preset-env": "^7.13.15",
+    "@babel/preset-react": "^7.13.13",
+    "@babel/preset-typescript": "^7.13.0",
     "babel-loader": "^8.2.2",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "css-loader": "^5.2.3",
@@ -30,7 +34,8 @@
     "workbox-webpack-plugin": "^6.1.5"
   },
   "scripts": {
-    "start": "node ./scripts/start.js"
+    "start": "node ./scripts/start.js",
+    "build": "node ./scripts/build.js"
   },
   "repository": {
     "type": "git",
@@ -60,8 +65,14 @@
         "@babel/env",
         {
           "useBuiltIns": "usage",
-          "corejs": { "version": "3.8", "proposals": true }
+          "corejs": {
+            "version": "3.8",
+            "proposals": true
+          }
         }
+      ],
+      [
+        "@babel/preset-typescript"
       ],
       [
         "@babel/preset-react",
@@ -70,7 +81,19 @@
           "pragma": "dom",
           "pragmaFrag": "DomFrag",
           "throwIfNamespace": false
-          // "importSource": "custom-jsx-library" // defaults to react (only in automatic runtime)
+        }
+      ]
+    ],
+    "sourceType": "unambiguous",
+    "plugins": [
+      [
+        "@babel/plugin-transform-runtime",
+        {
+          "absoluteRuntime": false,
+          "corejs": 3,
+          "helpers": true,
+          "regenerator": true,
+          "useESModules": false
         }
       ]
     ]
