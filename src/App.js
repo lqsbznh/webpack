@@ -1,6 +1,10 @@
 import React from "react";
+import "./a.scss"
 
 function App() {
+  const a = () => {return 1}
+  const b = a();
+
   return (
     <div className="App">
       <header className="App-header">

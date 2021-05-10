@@ -7,6 +7,7 @@ const paths = require('./paths');
 const webpack = require('webpack');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 
+const postcssNormalize = require('postcss-normalize');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -16,7 +17,6 @@ const {InjectManifest} = require('workbox-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const postcssNormalize = require('postcss-normalize');
 
 const imageInlineSizeLimit = 10000;
 const shouldUseSourceMap = false;
@@ -52,19 +52,24 @@ module.exports = function (webpackEnv) {
       {
         loader: require.resolve('postcss-loader'),
         options: {
-          // https://github.com/facebook/create-react-app/issues/2677
-          // ident: 'postcss',
-          plugins: () => [
-            require('postcss-flexbugs-fixes'),
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
+          postcssOptions: {
+            ident: 'postcss',
+            plugins: [
+            'postcss-flexbugs-fixes',
+            [
+              'postcss-preset-env',
+              {
+                autoprefixer: {
+                  grid: true,
+                },
+                stage: 3,
               },
-              stage: 3,
-            }),
+            ],
             // 根据browserslist适配
             postcssNormalize(),
-          ],
+            ],
+          },
+
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       },
