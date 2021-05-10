@@ -7,7 +7,6 @@ const paths = require('./paths');
 const webpack = require('webpack');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 
-const postcssNormalize = require('postcss-normalize');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -17,6 +16,8 @@ const {InjectManifest} = require('workbox-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
+const postcssNormalize = require('postcss-normalize');
+const postcssPresetEnv = require('postcss-preset-env');
 
 const imageInlineSizeLimit = 10000;
 const shouldUseSourceMap = false;
