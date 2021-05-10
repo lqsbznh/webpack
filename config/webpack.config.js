@@ -141,16 +141,16 @@ module.exports = function (webpackEnv) {
             },
             keep_classnames: isEnvProductionProfile,
             keep_fnames: isEnvProductionProfile,
-            output: {
-              comments: false,
-              ascii_only: true,
-            },
+            // output: {
+            //   // comments: false,
+            //   ascii_only: true,
+            // },
             format: {
               // 删除代码注释
               comments: false,
             },
+            sourceMap: shouldUseSourceMap,
           },
-          // sourceMap: shouldUseSourceMap,
         }),
         // 压缩css
         new CssMinimizerPlugin({
@@ -302,7 +302,6 @@ module.exports = function (webpackEnv) {
                 {
                   importLoaders: 3,
                   // 使用Dart Sass
-                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
@@ -316,7 +315,6 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
-                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
@@ -410,4 +408,3 @@ module.exports = function (webpackEnv) {
     performance: false,
   }
 }
-// Moment.js库
