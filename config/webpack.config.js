@@ -16,6 +16,7 @@ const {InjectManifest} = require('workbox-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
+const postcssNormalize = require('postcss-normalize');
 
 const imageInlineSizeLimit = 10000;
 const shouldUseSourceMap = false;
@@ -51,22 +52,19 @@ module.exports = function (webpackEnv) {
       {
         loader: require.resolve('postcss-loader'),
         options: {
-          // Necessary for external CSS imports to work
           // https://github.com/facebook/create-react-app/issues/2677
           // ident: 'postcss',
-          // plugins: () => [
-          //   require('postcss-flexbugs-fixes'),
-          //   require('postcss-preset-env')({
-          //     autoprefixer: {
-          //       flexbox: 'no-2009',
-          //     },
-          //     stage: 3,
-          //   }),
-            // Adds PostCSS Normalize as the reset css with default options,
-            // so that it honors browserslist config in package.json
-            // which in turn let's users customize the target behavior as per their needs.
-            // postcssNormalize(),
-          // ],
+          plugins: () => [
+            require('postcss-flexbugs-fixes'),
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009',
+              },
+              stage: 3,
+            }),
+            // 根据browserslist适配
+            postcssNormalize(),
+          ],
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       },
@@ -121,6 +119,7 @@ module.exports = function (webpackEnv) {
         (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
       // globalObject: 'this',
       assetModuleFilename: 'static/media/[name].[hash:8].[ext]',
+      clean: isEnvProduction, // 打包之前先清除
     },
 
     optimization: {
@@ -211,69 +210,29 @@ module.exports = function (webpackEnv) {
               loader: require.resolve('babel-loader'),
               options: {
                 // babel-loader 配置
-                // customize: require.resolve(
-                //   'babel-preset-react-app/webpack-overrides'
-                // ),
-                // presets: [
-                //   [
-                //     require.resolve('babel-preset-react-app'),
-                //     {
-                //       runtime: hasJsxRuntime ? 'automatic' : 'classic',
-                //     },
-                //   ],
-                // ],
-                //
-                // plugins: [
-                //   [
-                //     require.resolve('babel-plugin-named-asset-import'),
-                //     {
-                //       loaderMap: {
-                //         svg: {
-                //           ReactComponent:
-                //             '@svgr/webpack?-svgo,+titleProp,+ref![path]',
-                //         },
-                //       },
-                //     },
-                //   ],
-                //   isEnvDevelopment &&
-                //   shouldUseReactRefresh &&
-                //   require.resolve('react-refresh/babel'),
-                // ].filter(Boolean),
-                // // This is a feature of `babel-loader` for webpack (not Babel itself).
-                // // It enables caching results in ./node_modules/.cache/babel-loader/
-                // // directory for faster rebuilds.
-                // cacheDirectory: true,
-                // // See #6846 for context on why cacheCompression is disabled
-                // cacheCompression: false,
-                // compact: isEnvProduction,
+                cacheDirectory: true,
+                // https://github.com/facebook/create-react-app/issues/6846
+                cacheCompression: false,
+                compact: isEnvProduction,
               },
             },
             // 对于src外的文件做处理
-            // {
-            //   test: /\.(js|mjs)$/,
-            //   exclude: /@babel(?:\/|\\{1,2})runtime/,
-            //   loader: require.resolve('babel-loader'),
-            //   options: {
-            //     babelrc: false,
-            //     configFile: false,
-            //     compact: false,
-            //     presets: [
-            //       [
-            //         require.resolve('babel-preset-react-app/dependencies'),
-            //         { helpers: true },
-            //       ],
-            //     ],
-            //     cacheDirectory: true,
-            //     // See #6846 for context on why cacheCompression is disabled
-            //     cacheCompression: false,
-            //
-            //     // Babel sourcemaps are needed for debugging into node_modules
-            //     // code.  Without the options below, debuggers like VSCode
-            //     // show incorrect code and set breakpoints on the wrong lines.
-            //     sourceMaps: shouldUseSourceMap,
-            //     inputSourceMap: shouldUseSourceMap,
-            //   },
-            // },
+            {
+              test: /\.(js|mjs)$/,
+              exclude: /@babel(?:\/|\\{1,2})runtime/,
+              loader: require.resolve('babel-loader'),
+              options: {
+                babelrc: false,
+                configFile: false,
+                compact: false,
+                cacheDirectory: true,
+                // https://github.com/facebook/create-react-app/issues/6846
+                cacheCompression: false,
+
+                sourceMaps: shouldUseSourceMap,
+                inputSourceMap: shouldUseSourceMap,
+              },
+            },
             {
               test: cssRegex,
               exclude: cssModuleRegex,

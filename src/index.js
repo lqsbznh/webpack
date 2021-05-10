@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from './App';
-import "./style.scss";
 
 console.log(document.getElementById('root'))
 // 我是注释，我还在吗
