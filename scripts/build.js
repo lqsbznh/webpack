@@ -20,13 +20,28 @@ const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 console.log('Creating an optimized production build...');
 const config = configFactory('production');
 const compiler = webpack(config);
+
 new Promise((resolve, reject) => {
   compiler.run((err, stats) => {
     if (err) {
-      console.log(err)
+      console.error(err.stack || err);
+      if (err.details) {
+        console.error(err.details);
+      }
+      return;
     }
-    return resolve(stats);
+
+    const info = stats.toJson();
+
+    if (stats.hasErrors()) {
+      console.error(info.errors);
+    }
+
+    if (stats.hasWarnings()) {
+      console.warn(info.warnings);
+    }
+
+    return resolve({stats});
   })
 }).then((stats) => {
-  console.log(stats);
 })
