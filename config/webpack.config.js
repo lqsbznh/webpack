@@ -1,4 +1,6 @@
-﻿'use strict';
+﻿// noinspection SpellCheckingInspection
+
+'use strict';
 const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
@@ -48,38 +50,42 @@ module.exports = function (webpackEnv) {
         loader: require.resolve('css-loader'),
         options: cssOptions,
       },
-      // {
-      //   loader: require.resolve('postcss-loader'),
-      //   options: {
-      //     // Necessary for external CSS imports to work
-      //     // https://github.com/facebook/create-react-app/issues/2677
-      //     ident: 'postcss',
-      //     plugins: () => [
-      //       require('postcss-flexbugs-fixes'),
-      //       require('postcss-preset-env')({
-      //         autoprefixer: {
-      //           flexbox: 'no-2009',
-      //         },
-      //         stage: 3,
-      //       }),
-      //       // Adds PostCSS Normalize as the reset css with default options,
-      //       // so that it honors browserslist config in package.json
-      //       // which in turn let's users customize the target behavior as per their needs.
-      //       postcssNormalize(),
-      //     ],
-      //     sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
-      //   },
-      // },
+      {
+        loader: require.resolve('postcss-loader'),
+        options: {
+          // Necessary for external CSS imports to work
+          // https://github.com/facebook/create-react-app/issues/2677
+          // ident: 'postcss',
+          // plugins: () => [
+          //   require('postcss-flexbugs-fixes'),
+          //   require('postcss-preset-env')({
+          //     autoprefixer: {
+          //       flexbox: 'no-2009',
+          //     },
+          //     stage: 3,
+          //   }),
+            // Adds PostCSS Normalize as the reset css with default options,
+            // so that it honors browserslist config in package.json
+            // which in turn let's users customize the target behavior as per their needs.
+            // postcssNormalize(),
+          // ],
+          sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
+        },
+      },
     ].filter(Boolean);
 
     if (preProcessor) {
       loaders.push({
         loader: require.resolve(preProcessor),
-        options: {
-          sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
-        }
+        options: Object.assign(
+          preProcessor === "sass-loader" ? {implementation: require('sass'),} : {},
+          {
+            sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
+          }
+        )
       })
     }
+
     return loaders;
   }
 
@@ -115,7 +121,7 @@ module.exports = function (webpackEnv) {
             .replace(/\\/g, '/')
         : isEnvDevelopment &&
         (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
-      globalObject: 'this',
+      // globalObject: 'this',
       assetModuleFilename: 'static/media/[name].[hash:8].[ext]',
     },
 
@@ -298,7 +304,6 @@ module.exports = function (webpackEnv) {
                 {
                   importLoaders: 3,
                   // 使用Dart Sass
-                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
@@ -312,7 +317,6 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
-                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,

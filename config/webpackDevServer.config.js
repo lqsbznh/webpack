@@ -5,6 +5,7 @@ const paths = require('./paths');
 const host =  process.env.HOST || '127.0.0.1';
 
 module.exports = function (proxy, allowedHost) {
+  console.log("asdasd", paths.publicUrlOrPath.slice(0, -1))
   return {
     // 打开会跳过host检查，容易遭受DNS攻击
     disableHostCheck: false,
