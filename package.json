@@ -4,6 +4,7 @@
   "description": "```javascript react react-dom eslint-plugin-react-hooks ``` ###### html",
   "main": "index.js",
   "dependencies": {
+    "@babel/runtime-corejs3": "^7.14.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
@@ -78,6 +79,19 @@
           "development": false,
           "pragmaFrag": "DomFrag",
           "throwIfNamespace": false
+        }
+      ]
+    ],
+    "sourceType": "unambiguous",
+    "plugins": [
+      [
+        "@babel/plugin-transform-runtime",
+        {
+          "absoluteRuntime": false,
+          "corejs": 3,
+          "helpers": true,
+          "regenerator": true,
+          "useESModules": false
         }
       ]
     ]

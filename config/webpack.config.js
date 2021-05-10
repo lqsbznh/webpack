@@ -1,6 +1,4 @@
-﻿// noinspection SpellCheckingInspection
-
-'use strict';
+﻿'use strict';
 const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
@@ -304,6 +302,7 @@ module.exports = function (webpackEnv) {
                 {
                   importLoaders: 3,
                   // 使用Dart Sass
+                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
@@ -317,6 +316,7 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
+                  implementation: require('sass'),
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
