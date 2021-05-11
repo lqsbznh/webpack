@@ -57,6 +57,7 @@ module.exports = function (webpackEnv) {
             ident: 'postcss',
             plugins: [
             'postcss-flexbugs-fixes',
+              // https://github.com/postcss/autoprefixer/issues/1406
             [
               'postcss-preset-env',
               {
